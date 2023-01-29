@@ -1,12 +1,14 @@
-<div class="container">
-    <slot/>
-</div>
+<script>
+    import { Center, SvelteUIProvider } from '@svelteuidev/core';
 
-<style>
-    .container {
-        display: flex;
-        justify-content: center;
-        padding: 10px;
-        padding-top: 20px;
+    const padding = {
+        padding: '10px'
     }
-</style>
+    
+</script>
+
+<SvelteUIProvider>
+    <Center override={padding}>
+        <slot/>
+    </Center>
+</SvelteUIProvider>

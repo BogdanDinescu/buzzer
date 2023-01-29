@@ -29,9 +29,22 @@
             loadingRegister = false;
             if (result.err) {
                 alert = result.err;
+            } else {
+                listUser(result);
             }
         })
     }
+
+    function listUser(result) {
+        gun.get("users").get(result.pub).put(username, (res) => {
+            if (res.err) {
+                alert = result.err;
+            } else {
+                goto('/', {replaceState: true});
+            }
+        });
+    }
+
 </script>
 
 <div class="form-container">
