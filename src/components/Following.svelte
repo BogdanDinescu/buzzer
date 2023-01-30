@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { gun } from '../gunDB';
-    import { Paper, Chip, Text, Grid, TextInput, Space, Group } from '@svelteuidev/core';
+    import { Paper, Chip, Text, TextInput, Space, Group } from '@svelteuidev/core';
 
     let users:{pub:string, alias:string, follow: boolean}[] = [];
     let key: string = "";
@@ -23,7 +23,7 @@
             gun.user().get("following").map().once((alias, pub) => {
                 followedUsers[pub] = alias;
             });
-            console.log(followedUsers);
+            
             // set follow = true if the user is present in followed Users based on it's public key
             users.map(u => {
                 let alias = followedUsers[u.pub]
@@ -34,7 +34,6 @@
                     u.follow = false;
                 }
             });
-            console.log(users);
             users = users;
         }
     });
@@ -43,6 +42,7 @@
 </script>
 
 {#each users as {pub, alias, follow}}
+    <Space h={10}/>
     <Paper
         p='sm'
         withBorder
