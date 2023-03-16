@@ -30,12 +30,12 @@
             if (result.err) {
                 alert = result.err;
             } else {
-                listUser(result);
+                registerUser(result);
             }
         })
     }
 
-    function listUser(result) {
+    function registerUser(result) {
         gun.get("users").get(result.pub).put(username, (res) => {
             if (res.err) {
                 alert = result.err;
@@ -74,7 +74,7 @@
             ripple
             on:click={login}>
             Login
-            {#if loadingLogin}<Loader variant='dots' color='white' />{/if}
+            {#if loadingLogin}<Loader variant='dots' color='white' size='sm'/>{/if}
         </Button>
         <Button
             color="orange"
@@ -82,7 +82,7 @@
             ripple
             on:click={register}>
             Register
-            {#if loadingRegister}<Loader variant='dots' color='white' />{/if}
+            {#if loadingRegister}<Loader variant='dots' color='white' size='sm'/>{/if}
         </Button>
     </div>
 </div>

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { gun } from '../gunDB';
-    import { Tabs, Button, Modal } from '@svelteuidev/core';
+    import { onMount } from 'svelte';
+    import { Tabs, Button, Modal, Loader } from '@svelteuidev/core';
     import { Home, Gear, Person, Pencil1 } from 'radix-icons-svelte';
     import { goto } from '$app/navigation';
     import NewPost from '../components/NewPost.svelte';
@@ -17,6 +18,12 @@
     function closeModal() {
         openedModal = false;
     }
+
+    onMount(async () => {
+        if (!gun.user().is) {
+            goto('/login', {replaceState: true});
+        }
+    })
 
 </script>
 
