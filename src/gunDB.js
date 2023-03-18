@@ -6,6 +6,7 @@ import SEA from 'gun/sea'
 //import 'gun/lib/store.js'
 
 export const gun = GUN();
+export const sea = GUN.SEA;
 
 export const user = gun.user().recall({sessionStorage: true});
 

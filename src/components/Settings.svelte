@@ -5,6 +5,7 @@
 
     function logout() {
         gun.user().leave();
+        localStorage.removeItem("encPrivKey");
         goto('/login', {replaceState: true});
     }
 </script>

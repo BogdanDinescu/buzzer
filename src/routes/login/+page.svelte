@@ -3,6 +3,7 @@
     import { TextInput, Button, Alert, Title, Loader } from '@svelteuidev/core';
     import { Person, LockClosed, InfoCircled } from 'radix-icons-svelte';
     import { gun } from '../../gunDB';
+    import { sea } from '../../gunDB';
     import { goto } from '$app/navigation';
 
     let username = '';
@@ -13,7 +14,9 @@
 
     function login() {
         loadingLogin = true;
-        gun.user().auth(username, password, (result) => {
+        gun.user().auth(username, password, async (result) => {
+            const encryptedPrivKey = await sea.encrypt(result.sea.priv, password);
+            localStorage.setItem("encPrivKey", encryptedPrivKey);
             loadingLogin = false;
             if (result.err) {
                 alert = result.err;
