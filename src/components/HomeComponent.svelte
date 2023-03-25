@@ -2,12 +2,11 @@
     import { Paper, Text, Space, Title } from "@svelteuidev/core";
     import { onMount } from "svelte";
     import { gun } from "../gunDB";
+    import type { Post } from "../Post";
+    import PostComponent from "./PostComponent.svelte";
 
     let followedUsers:{pub:string, alias:string}[] = [];
-    let posts: {pub: string, alias: string, timestamp: string, text: string}[] = []
-    const cardStyle = {
-        width: "500px"
-    }
+    let posts: Post[] = []
 
     onMount(() => {
         gun.user().get("following").map().once((alias, pub) => {
@@ -21,7 +20,7 @@
                     posts.push({
                         pub: u.pub,
                         alias: u.alias,
-                        timestamp: id,
+                        timestamp: parseInt(id),
                         text: text
                     })
                 });
@@ -34,15 +33,5 @@
 
 {#each posts as post}
     <Space h={10}/>
-    <Paper
-        p='sm'
-        override={cardStyle}
-    >
-        <Title size='lg' weight="semibold">{post.alias}</Title>
-        <Text size='xs' color='gray'>{post.pub}</Text>
-        <Space h={10}/>
-        <Text>{post.text}</Text>
-        <Space h={10}/>
-        <Text size='sm' color='gray'>{new Date(parseInt(post.timestamp)).toLocaleString()}</Text>
-    </Paper>    
+    <PostComponent post = {post}/>   
 {/each}

@@ -1,7 +1,7 @@
 <script>
 // @ts-nocheck
     import { TextInput, Button, Alert, Title, Loader } from '@svelteuidev/core';
-    import { Person, LockClosed, InfoCircled } from 'radix-icons-svelte';
+    import { Person, LockClosed, InfoCircled, CheckCircled } from 'radix-icons-svelte';
     import { gun } from '../../gunDB';
     import { sea } from '../../gunDB';
     import { goto } from '$app/navigation';
@@ -9,6 +9,7 @@
     let username = '';
     let password = '';
     let alert = '';
+    let success = false;
     let loadingRegister = false;
     let loadingLogin = false;
 
@@ -20,6 +21,7 @@
             loadingLogin = false;
             if (result.err) {
                 alert = result.err;
+                success = false;
             } else {
                 goto('/', {replaceState: true});
             }
@@ -32,20 +34,11 @@
             loadingRegister = false;
             if (result.err) {
                 alert = result.err;
+                success = false;
             } else {
-                registerUser(result);
+                success = true;
             }
         })
-    }
-
-    function registerUser(result) {
-        gun.get("users").get(result.pub).put(username, (res) => {
-            if (res.err) {
-                alert = result.err;
-            } else {
-                goto('/', {replaceState: true});
-            }
-        });
     }
 
 </script>
@@ -55,6 +48,11 @@
     {#if alert}
     <Alert icon={InfoCircled}  title="Error" color="orange">
         {alert}
+    </Alert>
+    {/if}
+    {#if success}
+    <Alert icon={CheckCircled}  title="Success" color="green">
+        Registration succeded
     </Alert>
     {/if}
     <TextInput
