@@ -1,76 +1,49 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { gun } from '../gunDB';
-    import { Paper, Chip, Text, TextInput, Space, Group } from '@svelteuidev/core';
+    import { Paper, Chip, Text, TextInput, Space, Group, UnstyledButton } from '@svelteuidev/core';
+    import { goto } from '$app/navigation';
 
-    let users:{pub:string, alias:string, follow: boolean}[] = [];
-    let key: string = "";
+    let followedUsers:{pub:string, alias:string}[] = [];
     const cardStyle = {
         width: "500px"
     }
+    const textStyle = {
+        overflowWrap: "break-word"
+    }
 
     onMount(() => {
-        let userData = gun.user().is;
-        if (userData !== undefined) {
-            key = userData.pub;
-            // get all users
-            gun.get("users").map().once((alias, pub) => {
-                users.push({pub, alias, follow: false});
-            });
-
-            // get followed users
-            let followedUsers: any = {}
-            gun.user().get("following").map().once((alias, pub) => {
-                followedUsers[pub] = alias;
-            });
-            
-            // set follow = true if the user is present in followed Users based on it's public key
-            users.map(u => {
-                let alias = followedUsers[u.pub]
-                if (alias) {
-                    u.alias = alias;
-                    u.follow = true;
-                } else {
-                    u.follow = false;
-                }
-            });
-            users = users;
-        }
+        gun.user().get("following").map().once((alias, pub) => {
+            if (alias !== null) {
+                followedUsers = [...followedUsers, {pub, alias}];
+            }
+        });
     });
 
 
 </script>
 
-{#each users as {pub, alias, follow}}
+{#each followedUsers as {pub, alias}}
     <Space h={10}/>
     <Paper
         p='sm'
         withBorder
         override={cardStyle}
     >
-        <Group position="center">
-            <TextInput
-                placeholder="Name"
-                bind:value={alias}
-            />
-            
+        <Group position="apart">
+            <UnstyledButton root="a" on:click={() => goto('/user/' + pub)}><Text weight={'bold'}>{alias}</Text></UnstyledButton>
             <Chip
                 color="orange"
-                bind:checked={follow}
                 on:click={() => {
-                    if (follow) {
-                        gun.user().get("following").get(pub).put(null);
-                    } else {
-                        gun.user().get("following").get(pub).put(alias);
-                    }
+                    gun.user().get("following").get(pub).put(null, () => {
+                        followedUsers = followedUsers.filter(x => x.pub !== pub)
+                    });
                 }}
             >
-                Follow
+                Unfollow
             </Chip>
         </Group>
-        <Space h={20}/>
-        <Text size='sm' color='gray'>
-            {pub}
-        </Text>
+        <Space h={10}/>
+        <Text size='sm' color='gray' override={textStyle}>{pub}</Text>
     </Paper>
 {/each}
