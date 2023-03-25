@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { TextInput, UnstyledButton, Text, Paper, Title, Grid, Space, Button, Center} from "@svelteuidev/core";
+    import { TextInput, UnstyledButton, Text, Paper, Title, Grid, Space, Button, Group} from "@svelteuidev/core";
     import { MagnifyingGlass, ArrowLeft } from "radix-icons-svelte";
     import { onMount } from "svelte";
     import { gun, sea } from '../gunDB';
@@ -29,10 +29,17 @@
     }
 
     function selecting() {
+        selectedPosts = [];
         gun.get("hashtags").get(selectedHashtag.substring(1)).map().once(async (value, key) => {
             const post = JSON.parse(value.substring(3));
             const verifiedPost: Post = await sea.verify(value, post.m.pub);
-            selectedPosts = [...selectedPosts, verifiedPost];
+            if (verifiedPost) {
+                selectedPosts = [...selectedPosts, verifiedPost];
+            } else {
+                const unverifiedPost = post.m;
+                unverifiedPost.signingError = true;
+                selectedPosts = [...selectedPosts, unverifiedPost];
+            }
         });
     }
 
@@ -52,11 +59,11 @@
         <Grid.Col span={10}><Title align="center">{selectedHashtag}</Title></Grid.Col>
     </Grid>
     <Space h="sm"/>
-    <Center>
+    <Group position="center" direction="column">
         {#each selectedPosts as post}
-            <PostComponent post = {post}/>
+            <PostComponent post = {post} signingError={"signingError" in post}/>
         {/each}
-    </Center>
+    </Group>
 {:else}
     {#each searchedHashtags as hashtag}
         <UnstyledButton

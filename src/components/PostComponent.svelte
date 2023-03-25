@@ -1,22 +1,44 @@
 <script lang="ts">
-    import { Paper, Title, Space, Text} from "@svelteuidev/core";
+    import { Paper, Title, Space, Text, ThemeIcon, Group, UnstyledButton} from "@svelteuidev/core";
     import type { Post } from '../Post';
+    import { Check, Cross2 } from 'radix-icons-svelte';
+    import { goto } from '$app/navigation';
 
+    const cardStyle = {
+        width: "500px"
+    }
     const textStyle = {
         overflowWrap: "break-word"
     }
     export let post: Post;
+    export let signingError: boolean = false;
+
+    function clickAlias() {
+        goto('/user/' + post.pub);
+    }
 
 </script>
 
 <Paper
     p='sm'
+    override={cardStyle}
 >
-    <Title size='lg' weight="semibold">{post.alias}</Title>
+    <UnstyledButton root="a" on:click={clickAlias}><Title size='lg' weight="semibold">{post.alias}</Title></UnstyledButton>
     <Space h={5}/>
     <Text size='xs' color='gray' override={textStyle}>{post.pub}</Text>
     <Space h={10}/>
     <Text override={textStyle}>{post.text}</Text>
     <Space h={10}/>
-    <Text size='sm' color='gray'>{new Date(post.timestamp).toLocaleString()}</Text>
+    <Group position="apart">
+        <Text size='sm' color='gray'>{new Date(post.timestamp).toLocaleString()}</Text>
+        {#if signingError}
+            <ThemeIcon color="red" variant="subtle">
+                <Cross2 />
+            </ThemeIcon>
+        {:else}
+            <ThemeIcon color="green" variant="subtle">
+                <Check />
+            </ThemeIcon>
+        {/if}
+    </Group>
 </Paper>
