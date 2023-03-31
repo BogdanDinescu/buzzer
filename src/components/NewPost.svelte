@@ -140,6 +140,8 @@
 
 <style>
     textarea {
+        border: 2px lightgrey solid;
+        border-radius: 5px;
         width: 100%;
         height: 200%;
     }

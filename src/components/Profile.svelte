@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
-    import { Button, Group, Notification, Title, Loader, Space, UnstyledButton } from "@svelteuidev/core";
+    import { Button, Group, Notification, Title, Loader, Space, UnstyledButton, InputWrapper } from "@svelteuidev/core";
     import { onMount } from "svelte";
     import { gun } from "../gunDB";
     
@@ -68,6 +68,8 @@
 
 <style>
     textarea {
+        border: 2px lightgrey solid;
+        border-radius: 5px;
         width: 80%;
         height: 200%;
     }

@@ -30,6 +30,7 @@
 <Paper
     p='sm'
     override={cardStyle}
+    withBorder
 >
     <UnstyledButton root="a" on:click={clickAlias}><Title size='lg' weight="semibold">{post.alias}</Title></UnstyledButton>
     <Space h={5}/>
