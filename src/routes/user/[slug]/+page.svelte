@@ -30,7 +30,6 @@
             }
         })
         gun.user().get("profile").once((value) => {
-            console.log(value);
             profile = value;
         });
         gun.user().get("following").map().once((aliasValue, pubKey) => {

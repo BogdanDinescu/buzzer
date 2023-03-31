@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { Button, Group, Notification, Title, Loader, Space } from "@svelteuidev/core";
+    import { goto } from "$app/navigation";
+    import { Button, Group, Notification, Title, Loader, Space, UnstyledButton } from "@svelteuidev/core";
     import { onMount } from "svelte";
     import { gun } from "../gunDB";
     
@@ -38,10 +39,14 @@
         notification = '';
     }
 
+    function clickTitle() {
+        goto('/user/' + gun.user().is?.pub);
+    }
+
 </script>
 
 <Group direction="column">
-    <Title>My profile</Title>
+    <UnstyledButton root="a" on:click={clickTitle}><Title>My profile</Title></UnstyledButton>
     <textarea rows="5" maxlength="300" bind:value={text}></textarea>
     <Button 
         color="orange"

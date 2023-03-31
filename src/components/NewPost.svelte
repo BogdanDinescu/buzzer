@@ -15,7 +15,13 @@
         // get public key
         const timestamp: number = Gun.state();
         const pubKey = gun.user().is?.pub;
-        const alias = gun.user().is?.alias.toString();
+        let alias = gun.user().is?.alias.toString();
+        if (alias === pubKey) {
+            let aliasStorage = localStorage.getItem('alias');
+            if (aliasStorage) {
+                alias = aliasStorage;
+            }
+        }
         if (pubKey === undefined || alias === undefined) {
             displayAlert("User not logged in. Please logout and log back in")
             return;

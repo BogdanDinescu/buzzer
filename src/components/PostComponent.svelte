@@ -17,6 +17,14 @@
         goto('/user/' + post.pub);
     }
 
+    function timestampToDate(timestamp: number): string {
+        const dtFormat = new Intl.DateTimeFormat('en-GB', {
+            dateStyle: 'medium',
+            timeStyle: 'short',
+        });
+        return dtFormat.format(new Date(timestamp));
+    }
+
 </script>
 
 <Paper
@@ -30,7 +38,7 @@
     <Text override={textStyle}>{post.text}</Text>
     <Space h={10}/>
     <Group position="apart">
-        <Text size='sm' color='gray'>{new Date(post.timestamp).toLocaleString()}</Text>
+        <Text size='sm' color='gray'>{timestampToDate(post.timestamp)}</Text>
         {#if signingError}
             <ThemeIcon color="red" variant="subtle">
                 <Cross2 />
