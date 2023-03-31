@@ -1,7 +1,7 @@
 <script lang="ts">
     import { gun, sea } from '../../../gunDB';
     import { page } from '$app/stores';
-    import { Stack, Group, Title, Button, Loader, TextInput, Grid } from '@svelteuidev/core';
+    import { Stack, Group, Title, Button, Loader, TextInput, Grid, Text } from '@svelteuidev/core';
     import { onMount } from 'svelte';
     import type { Post } from '../../../Post';
     import PostComponent from '../../../components/PostComponent.svelte';
@@ -13,6 +13,7 @@
     let alias: string;
     let petname: string;
     let posts: Array<Post> = [];
+    let profile: string = '';
     let following: boolean = false;
     let loadingFollow: boolean = false;
 
@@ -27,6 +28,10 @@
                 unverifiedPost.signingError = true;
                 posts = [...posts, unverifiedPost];
             }
+        })
+        gun.user().get("profile").once((value) => {
+            console.log(value);
+            profile = value;
         });
         gun.user().get("following").map().once((aliasValue, pubKey) => {
             if (pubKey === pub && aliasValue !== null) {
@@ -67,13 +72,13 @@
 
 <Stack>
 <Grid>
-    <Grid.Col span={2}><Button color="orange" size="xs" on:click={() => goto(previousPage)}><ArrowLeft/></Button></Grid.Col>
+    <Grid.Col span={2}><Button color="orange" size="xs" on:click={() => previousPage ? goto(previousPage) : goto('/')}><ArrowLeft/></Button></Grid.Col>
     <Grid.Col span={8}><Title align="center">{alias}</Title></Grid.Col>
     <Grid.Col span={2}>
         {#if following}
-            <Button ripple color="red" on:click={unfollow}>Unfollow {#if loadingFollow}<Loader variant='dots' color='white' size='sm'/>{/if}</Button>
+            <Button color="red" on:click={unfollow}>Unfollow {#if loadingFollow}<Loader variant='dots' color='white' size='sm'/>{/if}</Button>
         {:else}
-            <Button ripple color="orange" on:click={follow}>Follow {#if loadingFollow}<Loader variant='dots' color='white' size='sm'/>{/if}</Button>
+            <Button color="orange" on:click={follow}>Follow {#if loadingFollow}<Loader variant='dots' color='white' size='sm'/>{/if}</Button>
         {/if}
     </Grid.Col>
 </Grid>
@@ -81,7 +86,7 @@
     placeholder="Name"
     bind:value={petname}
 />
-
+<Text root="p">{profile}</Text>
 <Group position="center" direction="column">
     {#each posts as post}
         <PostComponent post = {post} signingError={"signingError" in post}/>
