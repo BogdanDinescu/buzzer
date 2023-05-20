@@ -1,8 +1,9 @@
 <script lang="ts">
-    import { Paper, Title, Space, Text, ThemeIcon, Group, UnstyledButton} from "@svelteuidev/core";
+    import { Paper, Title, Space, Text, ThemeIcon, Group, UnstyledButton, Tooltip, ActionIcon} from "@svelteuidev/core";
     import type { Post } from '../Post';
-    import { Check, Cross2 } from 'radix-icons-svelte';
+    import { Check, Cross2, MinusCircled, PlusCircled } from 'radix-icons-svelte';
     import { goto } from '$app/navigation';
+    import { train } from "../recommendationSystem";
 
     const cardStyle = {
         width: "500px"
@@ -25,6 +26,16 @@
         return dtFormat.format(new Date(timestamp));
     }
 
+    function vote(like: number): void {
+        let votes: Array<any> = JSON.parse(localStorage.getItem("votes") || "[]");
+        votes.push({text: post.text, like: like});
+        if (votes.length > 10) {
+            votes.shift();
+        }
+        localStorage.setItem("votes", JSON.stringify(votes));
+        train()
+    }
+
 </script>
 
 <Paper
@@ -32,7 +43,7 @@
     override={cardStyle}
     withBorder
 >
-    <UnstyledButton root="a" on:click={clickAlias}><Title size='lg' weight="semibold">{post.alias}</Title></UnstyledButton>
+    <UnstyledButton root="a" on:click={clickAlias} override={textStyle}><Title size='lg' weight="semibold">{post.alias}</Title></UnstyledButton>
     <Space h={5}/>
     <Text size='xs' color='gray' override={textStyle}>{post.pub}</Text>
     <Space h={10}/>
@@ -40,14 +51,23 @@
     <Space h={10}/>
     <Group position="apart">
         <Text size='sm' color='gray'>{timestampToDate(post.timestamp)}</Text>
+        <Tooltip label="More like this text">
+            <ActionIcon size="md" variant="transparent" on:click={() => vote(1)}><PlusCircled/></ActionIcon>
+        </Tooltip>
+        <Tooltip label="Less like this text">
+            <ActionIcon size="md" variant="transparent" on:click={() => vote(0)}><MinusCircled/></ActionIcon>
+        </Tooltip>
+        
         {#if signingError}
             <ThemeIcon color="red" variant="subtle">
                 <Cross2 />
             </ThemeIcon>
         {:else}
-            <ThemeIcon color="green" variant="subtle">
-                <Check />
-            </ThemeIcon>
+            <Tooltip label="Verified signature">
+                <ThemeIcon color="green" variant="subtle">
+                    <Check  />
+                </ThemeIcon>
+            </Tooltip>
         {/if}
     </Group>
 </Paper>

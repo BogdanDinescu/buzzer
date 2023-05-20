@@ -22,9 +22,9 @@
 
     function searching() {
         if (search.length == 0) {
-            searchedHashtags = [...hashtags];
+            searchedHashtags = [...hashtags].map(s => '#' + s);
         } else {
-            searchedHashtags = hashtags.filter(s => s.includes(search));
+            searchedHashtags = hashtags.filter(s => s.includes(search)).map(s => '#' + s);
         }
     }
 
@@ -45,13 +45,6 @@
 
 </script>
 
-<TextInput
-    placeholder="Search"
-    icon={MagnifyingGlass}
-    radius="md"
-    bind:value={search}
-    on:keyup={searching}
-/>
 {#if selectedHashtag}
     <Space h="sm"/>
     <Grid>
@@ -65,6 +58,13 @@
         {/each}
     </Group>
 {:else}
+    <TextInput
+        placeholder="Search hashtags"
+        icon={MagnifyingGlass}
+        radius="md"
+        bind:value={search}
+        on:keyup={searching}
+    />
     {#each searchedHashtags as hashtag}
         <UnstyledButton
             color="orange"
