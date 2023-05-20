@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Space } from "@svelteuidev/core";
+    import { Group, Space } from "@svelteuidev/core";
     import { onMount } from "svelte";
     import { gun, sea } from "../gunDB";
     import type { Post } from "../Post";
@@ -13,6 +13,7 @@
                 gun.user(pub).get("posts").map().once(async (value) => {
                     const post = JSON.parse(value.substring(3));
                     const verifiedPost: Post = await sea.verify(value, post.m.pub);
+                    verifiedPost.alias = alias;
                     if (verifiedPost) {
                         posts = pushAndSort(posts, verifiedPost);
                     } else {
@@ -38,7 +39,8 @@
     }
 </script>
 
-{#each posts as post}
-    <Space h={10}/>
-    <PostComponent post = {post} signingError={"signingError" in post}/>   
-{/each}
+<Group direction="column">
+    {#each posts as post}
+        <PostComponent post = {post} signingError={"signingError" in post}/>   
+    {/each}
+</Group>

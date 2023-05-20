@@ -2,7 +2,7 @@
     import { gun } from '../gunDB';
     import { onMount } from 'svelte';
     import { Tabs, Button, Modal, Loader } from '@svelteuidev/core';
-    import { Home, Gear, Person, Pencil1, MagnifyingGlass, Avatar } from 'radix-icons-svelte';
+    import { Home, Gear, Person, Pencil1, MagnifyingGlass, Avatar, Star } from 'radix-icons-svelte';
     import { goto } from '$app/navigation';
     import NewPost from '../components/NewPost.svelte';
     import Following from '../components/Following.svelte';
@@ -10,6 +10,7 @@
     import HomeComponent from '../components/HomeComponent.svelte';
     import Search from '../components/Search.svelte';
     import Profile from '../components/Profile.svelte';
+    import Discover from '../components/Discover.svelte';
     
     let openedModal = false;
 
@@ -33,6 +34,7 @@
     <Tabs.Tab label='Home' icon={Home}><HomeComponent/></Tabs.Tab>
     <Tabs.Tab label='Following' icon={Person}><Following/></Tabs.Tab>
     <Tabs.Tab label='Search' icon={MagnifyingGlass}><Search/></Tabs.Tab>
+    <Tabs.Tab label='Discover' icon={Star}><Discover/></Tabs.Tab>
     <Tabs.Tab label='Profile' icon={Avatar}><Profile/></Tabs.Tab>
     <Tabs.Tab label='Settings' icon={Gear}><Settings/></Tabs.Tab>
 </Tabs>
