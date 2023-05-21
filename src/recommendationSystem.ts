@@ -6,6 +6,7 @@ import levenshtein from 'js-levenshtein';
 import convnetjs from 'convnetjs';
 
 var docs = []
+var net;
 
 function constructTensor(docs, doc) {
     let m = [];
@@ -41,7 +42,8 @@ function similarityBetweenWords(w1, w2) {
 
 function constructTrainingX() {
     var data = JSON.parse(localStorage.getItem("votes") || "[]");
-    let response = []
+    let response = [];
+    docs = [];
     for (let i = 0; i < data.length; i++) {
         docs.push(wink(model).readDoc(data[i].text));
     }
@@ -74,7 +76,7 @@ function buildModel() {
     layers.push({type: 'pool', sx: 3, stride: 1});
     layers.push({type: 'fc', num_neurons: 1, activation: 'sigmoid'});
 
-    let net = new convnetjs.Net();
+    net = new convnetjs.Net();
     net.makeLayers(layers);
     return net;
 }
@@ -87,7 +89,11 @@ export function train() {
     for(let i=0; i < x.length; i++) {
         trainer.train(x[i], y[i]);
     }
-    //let v = constructTest(test.text)
-    //var scores = net.forward(v);
+    
     console.log("no er");
-} 
+}
+
+export function predict(text) {
+    let v = constructTest(text)
+    return net.forward(v);
+}

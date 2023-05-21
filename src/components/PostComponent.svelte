@@ -3,7 +3,6 @@
     import type { Post } from '../Post';
     import { Check, Cross2, MinusCircled, PlusCircled } from 'radix-icons-svelte';
     import { goto } from '$app/navigation';
-    import { train } from "../recommendationSystem";
 
     const cardStyle = {
         width: "500px"
@@ -33,7 +32,6 @@
             votes.shift();
         }
         localStorage.setItem("votes", JSON.stringify(votes));
-        train()
     }
 
 </script>

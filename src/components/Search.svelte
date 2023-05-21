@@ -13,7 +13,6 @@
     let selectedPosts: Array<Post> = [];
 
     onMount(() => {
-        console.log("search");
         gun.get("hashtags").map().once((value, key) => {
             hashtags = [...hashtags, key];
             searchedHashtags = [...searchedHashtags, '#' + key];
