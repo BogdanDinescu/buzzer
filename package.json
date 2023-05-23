@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "vite dev & node src/relay.js",
 		"build": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -20,11 +20,19 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@chainsafe/libp2p-noise": "^12.0.1",
+		"@chainsafe/libp2p-yamux": "^4.0.2",
+		"@libp2p/bootstrap": "^8.0.0",
+		"@libp2p/kad-dht": "^9.3.4",
+		"@libp2p/mdns": "^7.0.1",
+		"@libp2p/mplex": "^8.0.3",
+		"@libp2p/tcp": "^7.0.1",
 		"@svelteuidev/core": "^0.8.0",
 		"@tensorflow/tfjs": "^4.5.0",
 		"convnetjs": "^0.3.0",
 		"gun": "^0.2020.1239",
 		"js-levenshtein": "^1.1.6",
+		"libp2p": "^0.45.3",
 		"radix-icons-svelte": "^1.2.1",
 		"wink-eng-lite-web-model": "^1.5.0",
 		"wink-nlp": "^1.13.1"
