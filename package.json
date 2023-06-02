@@ -34,7 +34,9 @@
 		"js-levenshtein": "^1.1.6",
 		"libp2p": "^0.45.3",
 		"radix-icons-svelte": "^1.2.1",
+		"wink-distance": "^2.0.2",
 		"wink-eng-lite-web-model": "^1.5.0",
-		"wink-nlp": "^1.13.1"
+		"wink-nlp": "^1.13.1",
+		"wink-nlp-utils": "^2.1.0"
 	}
 }
