@@ -16,6 +16,12 @@
     function login() {
         loadingLogin = true;
         gun.user().auth(username, password, async (result) => {
+            if (result.err) {
+                alert = result.err;
+                success = false;
+                loadingLogin = false;
+                return;
+            }
             const encryptedPrivKey = await sea.encrypt(result.sea.priv, password);
             localStorage.setItem("encPrivKey", encryptedPrivKey);
             localStorage.setItem("alias", username);
