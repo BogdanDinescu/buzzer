@@ -12,6 +12,7 @@
     }
     export let post: Post;
     export let signingError: boolean = false;
+    export let customAlias: string = "";
 
     function clickAlias() {
         goto('/user/' + post.pub);
@@ -41,7 +42,7 @@
     override={cardStyle}
     withBorder
 >
-    <UnstyledButton root="a" on:click={clickAlias} override={textStyle}><Title size='lg' weight="semibold">{post.alias}</Title></UnstyledButton>
+    <UnstyledButton root="a" on:click={clickAlias} override={textStyle}><Title size='lg' weight="semibold">{customAlias?customAlias:post.alias}</Title></UnstyledButton>
     <Space h={5}/>
     <Text size='xs' color='gray' override={textStyle}>{post.pub}</Text>
     <Space h={10}/>

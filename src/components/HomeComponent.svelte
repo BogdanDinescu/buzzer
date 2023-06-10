@@ -1,19 +1,21 @@
 <script lang="ts">
-    import { Group, Space } from "@svelteuidev/core";
+    import { Group } from "@svelteuidev/core";
     import { onMount } from "svelte";
     import { gun, sea } from "../gunDB";
     import type { Post } from "../Post";
     import PostComponent from "./PostComponent.svelte";
 
     let posts: Post[] = []
+    let followingArray: Array<any> = [];
 
     onMount(() => {
-        gun.user().get("following").map().once((alias, pub) => {
-            if (alias !== null) {
-                gun.user(pub).get("posts").map().once(async (value) => {
+        gun.user().get("following").once(async (value) => {
+            followingArray = await decrypt(value);
+            followingArray.forEach(pair => {
+                gun.user(pair.pub).get("posts").map().once(async (value) => {
                     const post = JSON.parse(value.substring(3));
                     const verifiedPost: Post = await sea.verify(value, post.m.pub);
-                    verifiedPost.alias = alias;
+                    verifiedPost.alias = pair.alias;
                     if (verifiedPost) {
                         posts = pushAndSort(posts, verifiedPost);
                     } else {
@@ -22,8 +24,8 @@
                         posts = pushAndSort(posts, unverifiedPost);
                     }
                 });
-            }
-        });
+            });
+        })
     });
 
     function pushAndSort(arr: Array<Post>, post: Post) {
@@ -36,6 +38,19 @@
         }
         arr[i] = item;
         return arr;
+    }
+
+    async function decrypt(str: string): Promise<any> {
+        if (str === null || str === undefined) {
+            return [];
+        }
+        const pairString = sessionStorage.getItem('pair')
+        if (pairString) {
+            const pair = JSON.parse(pairString);
+            const decrypted = await sea.decrypt(str, pair);
+            return decrypted;
+        }
+        return str;
     }
 </script>
 

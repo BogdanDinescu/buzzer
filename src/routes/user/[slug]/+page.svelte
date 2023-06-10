@@ -7,7 +7,7 @@
     import PostComponent from '../../../components/PostComponent.svelte';
     import { afterNavigate, goto } from '$app/navigation';
     import { ArrowLeft } from 'radix-icons-svelte';
-
+    
     let pub = $page.params.slug;
     let previousPage: any;
     let alias: string;
@@ -16,6 +16,7 @@
     let profile: string = '';
     let following: boolean = false;
     let loadingFollow: boolean = false;
+    let followingArray: Array<any> = []
 
     onMount(() => {
         gun.user(pub).get("posts").map().once(async (value) => {
@@ -29,24 +30,37 @@
                 posts = [...posts, unverifiedPost];
             }
         })
-        gun.user().get("profile").once((value) => {
-            profile = value;
-        });
-        gun.user().get("following").map().once((aliasValue, pubKey) => {
-            if (pubKey === pub && aliasValue !== null) {
-                following = true;
-                alias = aliasValue;
+        gun.user(pub).get("profile").once((value) => {
+            if (value) {
+                profile = value;
             }
         });
+        gun.user(pub).get("alias").once((value) => {
+            alias = value;
+        });
+        gun.user().get("following").once(async (value) => {
+            followingArray = await decrypt(value);
+            followingArray.forEach(pair => {
+                if (pub === pair.pub && pair.alias) {
+                    following = true;
+                    alias = pair.alias
+                }
+            });
+        })
     })
 
     afterNavigate(({from}) => {
         previousPage = from?.url.pathname;
     })
 
-    function follow() {
+    async function follow(): Promise<void> {
         loadingFollow = true;
-        gun.user().get("following").get(pub).put(petname, (result) => {
+        if (petname.length === 0) {
+            petname = alias;
+        }
+        followingArray.push({pub: pub, alias: petname})
+        const enc = await encrypt(JSON.stringify(followingArray));
+        gun.user().get("following").put(enc, (result) => {
             loadingFollow = false;
             following = true;
             alias = petname;
@@ -56,15 +70,40 @@
         });
     }
 
-    function unfollow() {
+    async function unfollow(): Promise<void> {
         loadingFollow = true;
-        gun.user().get("following").get(pub).put(null, (result) => {
+        followingArray = followingArray.filter((item) => item.pub !== pub);
+        const enc = await encrypt(JSON.stringify(followingArray));
+        gun.user().get("following").put(enc, (result) => {
             loadingFollow = false;
             following = false;
             if ("err" in result && result.err !== undefined) {
                 console.log(result.err);
             }
         });
+    }
+
+    async function encrypt(str: string): Promise<string> {
+        const pairString = sessionStorage.getItem('pair')
+        if (pairString) {
+            const pair = JSON.parse(pairString);
+            const encrypted = await sea.encrypt(str, pair);
+            return encrypted;
+        }
+        return str;
+    }
+
+    async function decrypt(str: string): Promise<any> {
+        if (str === null || str === undefined) {
+            return [];
+        }
+        const pairString = sessionStorage.getItem('pair')
+        if (pairString) {
+            const pair = JSON.parse(pairString);
+            const decrypted = await sea.decrypt(str, pair);
+            return decrypted;
+        }
+        return str;
     }
 
 </script>
@@ -88,7 +127,7 @@
 <Text root="p">{profile}</Text>
 <Group position="center" direction="column">
     {#each posts as post}
-        <PostComponent post = {post} signingError={"signingError" in post}/>
+        <PostComponent post = {post} signingError={"signingError" in post} customAlias={alias}/>
     {/each}
 </Group>
 </Stack>
