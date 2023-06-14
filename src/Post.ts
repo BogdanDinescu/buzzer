@@ -3,6 +3,7 @@ export class Post {
     alias: string;
     timestamp: number;
     text: string;
+    photo: string | undefined;
     score: number = 0;
 
     constructor(pub: string, alias: string, timestamp: number, text: string) {

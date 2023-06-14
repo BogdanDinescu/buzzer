@@ -2,13 +2,15 @@
     // @ts-nocheck
     import { Button, Space, TextInput, Text, Notification } from '@svelteuidev/core';
     import Gun from 'gun/gun';
-    import { InfoCircled, LockClosed } from 'radix-icons-svelte';
+    import { InfoCircled, LockClosed, Upload } from 'radix-icons-svelte';
     import { gun, sea } from '../gunDB';
     import { Post } from '../Post';
 
     let text: string = '';
+    let photo: string = '';
     let password: string = '';
     let alert: string = ''; 
+    let fileInput: any;
     export let closeModal: any;
 
     async function post(): Promise<void> {
@@ -36,6 +38,10 @@
 
         // construct the post
         const post: Post = new Post(pubKey, alias, timestamp, text)
+
+        if (photo) {
+            post.photo = await getCID();
+        }
 
         // sign the post
         const signedPostString = await getSignedPost(pubKey, privKey, post);
@@ -105,24 +111,41 @@
         alert = '';
     }
 
+    async function getCID() {
+        const cid = await fetch('http://localhost:3000/', {
+			method: 'POST',
+			body: JSON.stringify({ payload: photo}),
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
+        const cidObj = await cid.json()
+        return cidObj.cid;
+    }
+
+    $: if (fileInput) {
+        const reader = new FileReader();
+        reader.readAsDataURL(fileInput[0]);
+        reader.addEventListener('load', async () => { photo = reader.result; });
+	}
 </script>
 
 <textarea rows="5" maxlength="300" bind:value={text}></textarea>
 <Space h="sm"/>
-<Text 
-    align="center"
-    color="orange"
+<label for="photo">
+    <Text 
     size="sm"
 >
-    Password is needed for signing the post with your private key.
-</Text>
-{#if alert}
-    <Space h="sm"/>
-    <Notification icon={InfoCircled}  title="Error" color="orange" on:close={closeAlert}>
-        {alert}
-    </Notification>
-{/if}
-<Space h="sm"/>
+    Image (optional)
+</Text></label>
+<input
+	accept="image/png, image/jpeg"
+	bind:files={fileInput}
+	id="photo"
+	name="photo"
+	type="file"
+/>
+<Space h="md"/>
 <TextInput
     placeholder="Password"
     icon={LockClosed}
@@ -130,6 +153,20 @@
     bind:value={password}
 />
 <Space h="md"/>
+<Text 
+    align="center"
+    color="orange"
+    size="sm"
+>
+    Password is needed for signing the post with your private key.
+</Text>
+<Space h="sm"/>
+{#if alert}
+    <Notification icon={InfoCircled}  title="Error" color="orange" on:close={closeAlert}>
+        {alert}
+    </Notification>
+    <Space h="sm"/>
+{/if}
 <Button
     color="orange"
     on:click={post}

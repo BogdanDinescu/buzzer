@@ -3,6 +3,7 @@
     import type { Post } from '../Post';
     import { Check, Cross2, MinusCircled, PlusCircled } from 'radix-icons-svelte';
     import { goto } from '$app/navigation';
+    import { onMount } from "svelte";
 
     const cardStyle = {
         width: "500px"
@@ -13,6 +14,17 @@
     export let post: Post;
     export let signingError: boolean = false;
     export let customAlias: string = "";
+    let photo: string = "";
+
+    onMount(async () => {
+        if (post.photo) {
+            const image = await fetch('http://localhost:3000/' + post.photo, {
+                method: 'GET',
+            });
+            const photoObj = await image.json();
+            photo = photoObj.text
+        }
+    });
 
     function clickAlias() {
         goto('/user/' + post.pub);
@@ -47,6 +59,9 @@
     <Text size='xs' color='gray' override={textStyle}>{post.pub}</Text>
     <Space h={10}/>
     <Text override={textStyle}>{post.text}</Text>
+    {#if photo}
+        <img src={photo} width="100%" alt="missing img"/>
+    {/if}
     <Space h={10}/>
     <Group position="apart">
         <Text size='sm' color='gray'>{timestampToDate(post.timestamp)}</Text>
