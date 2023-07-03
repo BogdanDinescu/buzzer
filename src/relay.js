@@ -78,7 +78,7 @@ var peers = [];
  
 libp2p.addEventListener('peer:discovery', (evt) => {
     if (evt.detail.addresses[1]) {
-        peers.push(evt.detail.addresses[1].multiaddr.toString().split('/')[2] + ':8081')
+        peers.push(evt.detail.addresses[1].multiaddr.toString().split('/')[2] + ':8080')
     }
 });
 
